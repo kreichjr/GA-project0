@@ -1,0 +1,1 @@
+This is the first mini-project being done for my General Assembly class!

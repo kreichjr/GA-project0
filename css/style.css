@@ -1,6 +1,7 @@
 body {
 	background-color: black;
 	color: white;
+	transition: background-color 1.0s ease;
 }
 
 audio {

@@ -3,7 +3,7 @@ console.log("Tamagotchi - GA Project 0")
 const music = {
 	player: document.querySelector("audio"),
 	volArray: [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1],
-	currVolIndex: 4,
+	currVolIndex: 0,
 	setVolume: function(vol) {
 		if (vol >= 0 && vol <= 1) {
 			this.player.volume = vol
@@ -63,6 +63,20 @@ const music = {
 	}
 }
 
+const game = {
+	music: music,
+	isStarted: false,
+	start: function(name) {
+		this.isStarted = true
+		this._hideName()
+		this.music.init()
+
+	},
+	_hideName: function() {
+		console.log(document.querySelector("#get-name").style.display = "none")
+	}
+}
+
 class Tamagachi {
 	constructor() {
 		this.hunger = 0
@@ -79,12 +93,23 @@ class Tamagachi {
 
 
 
+
+
 const button = document.querySelector("button")
+const textbox = document.querySelector("input")
 
 button.addEventListener("click", (event) => {
-	music.init()
+	if (document.querySelector("#get-name-input").value && !game.isStarted) {
+		game.start()
+	} else {
+		alert("Please enter a name for your Tamagachi!")
+	}
+})
 
-
+textbox.addEventListener("keypress", (event) => {
+	if (event.code === "Enter" && !game.isStarted) {
+		game.start()
+	}
 })
 
 

@@ -3,7 +3,7 @@ console.log("Tamagotchi - GA Project 0")
 const music = {
 	player: document.querySelector("audio"),
 	volArray: [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1],
-	currVolIndex: 0,
+	currVolIndex: 4,
 	setVolume: function(vol) {
 		if (vol >= 0 && vol <= 1) {
 			this.player.volume = vol
@@ -58,22 +58,50 @@ const music = {
 		this.setVolume(this.volArray[this.currVolIndex])
 		this.player.play()
 		this.createControls()
+		this.setCSS()
+	},
+	setCSS: function() {
 		document.body.style.backgroundColor = "#FF68B0"
-		document.body.style.color = "#000000"
+		document.body.style.color = "#000000"	
+
 	}
 }
 
 const game = {
 	music: music,
 	isStarted: false,
+	inputBuffer: [null, null, null, null, null, null, null, null, null, null, null],
 	start: function(name) {
 		this.isStarted = true
-		this._hideName()
-		this.music.init()
-
+		this._hideNameInput()
+		this._updateTamagachiName(name)
 	},
-	_hideName: function() {
+	_hideNameInput: function() {
 		console.log(document.querySelector("#get-name").style.display = "none")
+	},
+	_updateTamagachiName: function(name) {
+		const nameH1 = document.createElement("h1")
+		nameH1.innerText = name
+		document.querySelector("#tama-name").append(nameH1)
+	},
+	_arrayEquals: function(a, b) {
+  		return Array.isArray(a) &&
+    			Array.isArray(b) &&
+    			a.length === b.length &&
+    			a.every((val, index) => val === b[index]);
+	},
+	_easterEgg: function(event) {
+		console.log(event) // visual display of capturing key inputs
+		const konamiCode = [
+				"ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", 
+				"ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", 
+				"KeyB", "KeyA", "Enter"]
+		this.inputBuffer.shift()
+		this.inputBuffer.push(event.code)
+		if (game._arrayEquals(konamiCode, this.inputBuffer)) {
+			this.music.init()
+		}
+		
 	}
 }
 
@@ -97,18 +125,21 @@ class Tamagachi {
 
 const button = document.querySelector("button")
 const textbox = document.querySelector("input")
+document.onkeydown = (event) => {game._easterEgg(event)}
 
 button.addEventListener("click", (event) => {
 	if (document.querySelector("#get-name-input").value && !game.isStarted) {
-		game.start()
+		game.start(document.querySelector("#get-name-input").value)
 	} else {
 		alert("Please enter a name for your Tamagachi!")
 	}
 })
 
-textbox.addEventListener("keypress", (event) => {
-	if (event.code === "Enter" && !game.isStarted) {
-		game.start()
+textbox.addEventListener("keydown", (event) => {
+	if (event.code === "Enter" && !game.isStarted && document.querySelector("#get-name-input").value) {
+		game.start(document.querySelector("#get-name-input").value)
+	} else if (event.code === "Enter" && !game.isStarted) {
+		alert("Please enter a name for your Tamagachi!")
 	}
 })
 

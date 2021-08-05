@@ -68,7 +68,14 @@ legend {
 }
 
 #playground {
-	background-color: green;
+	/*background-color: green;*/
     width: 100%;
     height: 93%;
+}
+
+img {
+	transition: width 1.0s ease, height 1.0s ease, margin-left 2.0s ease, margin-top 2.0s ease;
+	width: 50px;
+	height: 50px;
+
 }

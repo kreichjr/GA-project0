@@ -124,14 +124,14 @@ const game = {
 			this.tamagotchi.ageUp()
 		}
 
-		
-
-
-		// Update Screen every other frame
-		// if (this.frameCounter % 2 === 0) {
-		// 	this.updateScreenStats()
-		// }
-
+		if (this.tamagotchi.isMoving) {
+			if (this.frameCounter % this.tamagotchi.animationSpeedSet[this.tamagotchi.animationSpeed] === 0) {
+				this.tamagotchi.updateAnimationFrame()
+			}
+		} else {
+			setTimeout(() => {this.tamagotchi.moveToNewSpot()}, 1000)
+			this.tamagotchi.isMoving = true
+		}
 		
 		// Check for death, if so, stop timer, and trigger death
 		if (this.frameCounter % 5 === 0) {
@@ -146,6 +146,7 @@ const game = {
 	},
 	endGame: function() {
 		clearInterval(this.globalTimer)
+		this.music.player.setAttribute("loop","false")
 		this.tamagotchi.runDeath()
 	},
 	updateScreenStats: function() {
@@ -190,6 +191,38 @@ class tamagotchi {
 		this.sleepiness = 0
 		this.boredom = 0
 		this.age = 0
+		this.animationRightArray = [
+										"./img/actorRight-00.png",
+										"./img/actorRight-01.png",
+										"./img/actorRight-00.png",
+										"./img/actorRight-02.png",
+									]
+		this.animationLeftArray = [
+										"./img/actorLeft-00.png",
+										"./img/actorLeft-01.png",
+										"./img/actorLeft-00.png",
+										"./img/actorLeft-02.png",
+									]
+		this.animationKey = 0
+		this.animationSpeed = "normal"
+		this.animationSpeedSet = {
+			fastest: 4,
+			fast: 8,
+			normal:12,
+			slow: 16,
+			slowest: 20
+		}
+		this.width = 50
+		this.height = 50
+		this.xLimit = 340
+		this.yLimit = 220
+		this.currentX = 0
+		this.currentY = 0
+		this.movementDirection = "Right"
+		this.isMoving = false
+		this.isDead = false
+
+
 	}
 
 	feedTama() {
@@ -224,31 +257,98 @@ class tamagotchi {
 
 	ageUp() {
 		this.age++
+		this.width += 15
+		this.height += 15
+		document.querySelector("#actor img").style.width = `${this.width}px`
+		document.querySelector("#actor img").style.height = `${this.height}px`
 		console.log(`${this.name} got older! They are ${this.age} now!`)
 	}
 
 	getHungrier() {
-		if (Math.random() < .15) {
+		if (Math.random() < .125) {
 			this.hunger++
 		}
 	}
 
 	getSleepier() {
-		if (Math.random() < .10) {
+		if (Math.random() < .125) {
 			this.sleepiness++
 		}
 	}
 
 	getBoreder() {
-		if (Math.random() < .2) {
+		if (Math.random() < .125) {
 			this.boredom++
 		}
 	}
 
 	runDeath() {
 		console.log(`Oh no! ${this.name} died. RIP lil buddy. :(`)
+		document.querySelector("#actor img").setAttribute("src","./img/actorDead.png")
 		alert("You died.")
-		// TODO: IMPLEMENT DEATH / UPDATE SPRITE / STOP CSS MOVEMENT
+		
+	}
+
+	moveToNewSpot() {
+		let xRange = this.xLimit - this.width
+		let yRange = this.yLimit - this.height
+		let newX = Math.floor(Math.random() * xRange)
+		let newY = Math.floor(Math.random() * yRange)
+
+		if (newX > this.currentX) {
+			this.movementDirection = "Right"
+		} else if (newX <= this.currentX) {
+			this.movementDirection = "Left"
+		}
+
+		//getting hypotenuse to determine walk speed
+		let aSquared = (this.currentX - newX) ** 2
+		let bSquared = (this.currentY - newY) ** 2
+		let hypotenuse = Math.sqrt(aSquared + bSquared)
+
+		if (hypotenuse < 80) {
+			this.animationSpeed = "slowest"
+		} else if (hypotenuse < 160) {
+			this.animationSpeed = "slow"
+		} else if (hypotenuse < 240) {
+			this.animationSpeed = "normal"
+		} else if (hypotenuse < 320) {
+			this.animationSpeed = "fast"
+		} else {
+			this.animationSpeed = "fastest"
+		}
+
+		document.querySelector("#actor img").style.marginLeft = `${newX}px`
+		document.querySelector("#actor img").style.marginTop = `${newY}px`
+		// this.isMoving = true
+		setTimeout(()=>{this.stopMoving()},2100)
+		this.currentX = newX
+		this.currentY = newY
+
+	}
+
+	stopMoving() {
+		this.isMoving = false
+		this.animationKey = 0
+		this._setFrame()
+	}
+
+	updateAnimationFrame() {
+		if (this.animationKey === 3) {
+			this.animationKey = 0
+		} else {
+			this.animationKey++
+		}
+		this._setFrame()
+	}
+
+	_setFrame() {
+		let key = this.animationKey
+		if (this.movementDirection === "Right") {
+			document.querySelector("#actor img").setAttribute("src",this.animationRightArray[key])
+		} else if (this.movementDirection === "Left") {
+			document.querySelector("#actor img").setAttribute("src",this.animationLeftArray[key])
+		}
 	}
 }
 

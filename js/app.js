@@ -74,7 +74,7 @@ const music = {
 const game = {
 	music: music,
 	isStarted: false,
-	tamagachi: undefined,
+	tamagotchi: undefined,
 	inputBuffer: [null, null, null, null, null, null, null, null, null, null, null],
 	globalTimer: undefined,
 	timeElapsedInSeconds: 0,
@@ -82,16 +82,24 @@ const game = {
 	start: function(name) {
 		this.isStarted = true
 		this._hideNameInput()
-		this._updateTamagachiName(name)
-		this.tamagachi = new Tamagachi(name)
+		this._updatetamagotchiName(name)
+		this.tamagotchi = new tamagotchi(name)
 		this.linkButtons()
+		this.createActor()
 		document.querySelector("#outershell").style.opacity = 100
 		this.globalTimer = setInterval(() => {this.stateCheck()}, 17)
 	},
 	linkButtons: function() {
-		document.querySelector("#eat-btn").addEventListener("click",() => {this.tamagachi.feedTama()})
-		document.querySelector("#light-btn").addEventListener("click",() => {this.tamagachi.turnOffLight()})
-		document.querySelector("#play-btn").addEventListener("click",() => {this.tamagachi.playWithTama()})
+		document.querySelector("#eat-btn").addEventListener("click",() => {this.tamagotchi.feedTama()})
+		document.querySelector("#light-btn").addEventListener("click",() => {this.tamagotchi.turnOffLight()})
+		document.querySelector("#play-btn").addEventListener("click",() => {this.tamagotchi.playWithTama()})
+	},
+	createActor: function() {
+		const imgTag = document.createElement('img')
+		const actor = document.querySelector("#actor")
+		imgTag.setAttribute("src","./img/actorRight-00.png")
+		actor.append(imgTag)
+
 	},
 	stateCheck: function() {
 		// increments a frame counter (slightly longer than a frame, 16.77777777 is 1 frame at 60fps)
@@ -105,54 +113,54 @@ const game = {
 
 		// Every quarter of a second, try to update stats
 		if (this.frameCounter % 15 === 0) {
-			this.tamagachi.getHungrier()
-			this.tamagachi.getSleepier()
-			this.tamagachi.getBoreder()
+			this.tamagotchi.getHungrier()
+			this.tamagotchi.getSleepier()
+			this.tamagotchi.getBoreder()
+			this.updateScreenStats()
 		}
 
 		// Every 12 seconds, age up by one
-		if (this.timeElapsedInSeconds % 12 === 0 && Math.floor(this.timeElapsedInSeconds / 12) > this.tamagachi.age) {
-			this.tamagachi.ageUp()
+		if (this.timeElapsedInSeconds % 12 === 0 && Math.floor(this.timeElapsedInSeconds / 12) > this.tamagotchi.age) {
+			this.tamagotchi.ageUp()
 		}
 
 		
 
 
 		// Update Screen every other frame
-		if (this.frameCounter % 2 === 0) {
-			this.updateScreenStats()
-		}
+		// if (this.frameCounter % 2 === 0) {
+		// 	this.updateScreenStats()
+		// }
 
 		
 		// Check for death, if so, stop timer, and trigger death
-		if (
-				this.tamagachi.hunger === 10 || 
-				this.tamagachi.sleepiness === 10 || 
-				this.tamagachi.boredom === 10
-			) {
-			this.endGame()
+		if (this.frameCounter % 5 === 0) {
+			if (
+					this.tamagotchi.hunger === 10 || 
+					this.tamagotchi.sleepiness === 10 || 
+					this.tamagotchi.boredom === 10
+				) {
+				this.endGame()
+			}
 		}
-		
 	},
 	endGame: function() {
 		clearInterval(this.globalTimer)
-		this.tamagachi.runDeath()
+		this.tamagotchi.runDeath()
 	},
 	updateScreenStats: function() {
 		const valToStr = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
-		document.querySelector("#hunger-stat").innerText = `Hunger: ${valToStr[this.tamagachi.hunger]}`
-		document.querySelector("#sleepiness-stat").innerText = `Sleepiness: ${valToStr[this.tamagachi.sleepiness]}`
-		document.querySelector("#boredom-stat").innerText = `Boredom: ${valToStr[this.tamagachi.boredom]}`
-		document.querySelector("#age-stat").innerText = `Age: ${valToStr[this.tamagachi.age]}`
-
-
+		document.querySelector("#hunger-stat").innerText = `Hunger: ${valToStr[this.tamagotchi.hunger]}`
+		document.querySelector("#sleepiness-stat").innerText = `Sleepiness: ${valToStr[this.tamagotchi.sleepiness]}`
+		document.querySelector("#boredom-stat").innerText = `Boredom: ${valToStr[this.tamagotchi.boredom]}`
+		document.querySelector("#age-stat").innerText = `Age: ${valToStr[this.tamagotchi.age]}`
 	},
 	_hideNameInput: function() {
 		console.log(document.querySelector("#get-name").style.display = "none")
 	},
-	_updateTamagachiName: function(name) {
+	_updatetamagotchiName: function(name) {
 		const tamaName = document.querySelector("#tama-name")
-		tamaName.innerText = `Tamagachi: ${name}`
+		tamaName.innerText = `Tamagotchi: ${name}`
 	},
 	_arrayEquals: function(a, b) {
   		return Array.isArray(a) &&
@@ -175,7 +183,7 @@ const game = {
 	}
 }
 
-class Tamagachi {
+class tamagotchi {
 	constructor(name) {
 		this.name = name
 		this.hunger = 0
@@ -242,16 +250,7 @@ class Tamagachi {
 		alert("You died.")
 		// TODO: IMPLEMENT DEATH / UPDATE SPRITE / STOP CSS MOVEMENT
 	}
-
-
 }
-
-
-
-
-
-
-
 
 
 
@@ -263,7 +262,7 @@ button.addEventListener("click", (event) => {
 	if (document.querySelector("#get-name-input").value && !game.isStarted) {
 		game.start(document.querySelector("#get-name-input").value)
 	} else {
-		alert("Please enter a name for your Tamagachi!")
+		alert("Please enter a name for your tamagotchi!")
 	}
 })
 
@@ -271,7 +270,7 @@ textbox.addEventListener("keydown", (event) => {
 	if (event.code === "Enter" && !game.isStarted && document.querySelector("#get-name-input").value) {
 		game.start(document.querySelector("#get-name-input").value)
 	} else if (event.code === "Enter" && !game.isStarted) {
-		alert("Please enter a name for your Tamagachi!")
+		alert("Please enter a name for your tamagotchi!")
 	}
 })
 

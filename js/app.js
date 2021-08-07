@@ -328,9 +328,13 @@ class tamagotchi {
 	}
 
 	stopMoving() {
-		this.isMoving = false
-		this.animationKey = 0
-		this._setFrame()
+		if (!this.isDead) {
+			this.isMoving = false
+			this.animationKey = 0
+			this._setFrame()
+		} else {
+			document.querySelector("#actor img").setAttribute("src","./img/actorDead.png")
+		}
 	}
 
 	updateAnimationFrame() {
@@ -373,5 +377,7 @@ textbox.addEventListener("keydown", (event) => {
 		alert("Please enter a name for your tamagotchi!")
 	}
 })
+
+
 
 

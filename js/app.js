@@ -289,9 +289,9 @@ class tamagotchi {
 		console.log(`Oh no! ${this.name} died. RIP lil buddy. :(`)
 		this.isDead = true
 		document.querySelector("#actor img").setAttribute("src","./img/actorDead.png")
-		// setTimeout(() => {
-		// 	alert("You Died. D=")
-		// }, 1500)
+		setTimeout(() => {
+			alert("You Died. D=")
+		}, 1500)
 		
 	}
 

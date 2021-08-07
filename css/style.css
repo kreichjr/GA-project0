@@ -4,6 +4,7 @@ body {
 	background-color: black;
 	color: white;
 	transition: background-color 3.0s ease;
+	margin:  0;
 }
 
 audio {
@@ -50,7 +51,7 @@ legend {
 #screen {
     width: 350px;
     height: 250px;
-    background-color: #888888;
+    /*background-color: #888888;*/
     border-radius: 3%;
     border-color: black;
     border: double;
@@ -71,6 +72,11 @@ legend {
 	/*background-color: green;*/
     width: 100%;
     height: 93%;
+}
+
+#get-name,
+#audio {
+	margin:  16px;
 }
 
 img {

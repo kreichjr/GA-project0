@@ -151,10 +151,13 @@ const game = {
 	},
 	updateScreenStats: function() {
 		const valToStr = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+		const sleepColor = ["#FFFFFF", "#EEEEEE", "#CCCCCC", "#AAAAAA", "#888888", 
+								"#777777", "#555555", "#333333", "#222222", "#000000"]
 		document.querySelector("#hunger-stat").innerText = `Hunger: ${valToStr[this.tamagotchi.hunger]}`
 		document.querySelector("#sleepiness-stat").innerText = `Sleepiness: ${valToStr[this.tamagotchi.sleepiness]}`
 		document.querySelector("#boredom-stat").innerText = `Boredom: ${valToStr[this.tamagotchi.boredom]}`
 		document.querySelector("#age-stat").innerText = `Age: ${valToStr[this.tamagotchi.age]}`
+		document.querySelector("#screen").style.backgroundColor = sleepColor[this.tamagotchi.sleepiness]
 	},
 	_hideNameInput: function() {
 		console.log(document.querySelector("#get-name").style.display = "none")
@@ -284,8 +287,11 @@ class tamagotchi {
 
 	runDeath() {
 		console.log(`Oh no! ${this.name} died. RIP lil buddy. :(`)
+		this.isDead = true
 		document.querySelector("#actor img").setAttribute("src","./img/actorDead.png")
-		alert("You died.")
+		// setTimeout(() => {
+		// 	alert("You Died. D=")
+		// }, 1500)
 		
 	}
 
@@ -338,20 +344,29 @@ class tamagotchi {
 	}
 
 	updateAnimationFrame() {
-		if (this.animationKey === 3) {
-			this.animationKey = 0
+		if (!this.isDead) {	
+			if (this.animationKey === 3) {
+				this.animationKey = 0
+			} else {
+				this.animationKey++
+			}
+			this._setFrame()
 		} else {
-			this.animationKey++
+			document.querySelector("#actor img").setAttribute("src","./img/actorDead.png")
 		}
-		this._setFrame()
 	}
 
 	_setFrame() {
-		let key = this.animationKey
-		if (this.movementDirection === "Right") {
-			document.querySelector("#actor img").setAttribute("src",this.animationRightArray[key])
-		} else if (this.movementDirection === "Left") {
-			document.querySelector("#actor img").setAttribute("src",this.animationLeftArray[key])
+		if (!this.isDead) {	
+			
+			let key = this.animationKey
+			if (this.movementDirection === "Right") {
+				document.querySelector("#actor img").setAttribute("src",this.animationRightArray[key])
+			} else if (this.movementDirection === "Left") {
+				document.querySelector("#actor img").setAttribute("src",this.animationLeftArray[key])
+			}
+		} else {
+			document.querySelector("#actor img").setAttribute("src","./img/actorDead.png")
 		}
 	}
 }
